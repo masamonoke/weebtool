@@ -59,6 +59,16 @@ class Executor:
             "\textend TEXT\n" \
             ");\n"
         queries.append(query)
+        query = \
+            "CREATE TABLE IF NOT EXISTS user_vocabulary (\n"\
+            "\tid INTEGER PRIMARY KEY AUTOINCREMENT,\n"\
+            "\tvalue TEXT NOT NULL UNIQUE,\n" \
+            "\toccurence INTEGER NOT NULL,\n" \
+            "\tlast_update TEXT NOT NULL,\n" \
+            "\trepeated INTEGER NOT NULL,\n" \
+            "\tislearnt BOOLEAN NOT NULL\n" \
+            ");\n"
+        queries.append(query)
         for k in self.kanjis:
             k.translation = sql_escape(k.translation)
             query = f"INSERT INTO kanji (symbol, onyomi, kunyomi, translation, difficulty)\n" \
