@@ -66,7 +66,8 @@ class Executor:
             "\toccurence INTEGER NOT NULL,\n" \
             "\tlast_update TEXT NOT NULL,\n" \
             "\trepeated INTEGER NOT NULL,\n" \
-            "\tislearnt BOOLEAN NOT NULL\n" \
+            "\tislearnt BOOLEAN NOT NULL,\n" \
+            "\trepeat_cycle INTEGER NOT NULL\n" \
             ");\n"
         queries.append(query)
         for k in self.kanjis:

@@ -57,15 +57,17 @@ class Kanji
 end
 
 class Entry
-  def initialize(id, value, occurence, last_update, repeated, islearnt, grade, reading, translation, type, outdate_time)
+  def initialize(id, value, occurence, last_update, repeated, islearnt, grade, reading, translation, type, outdate_time, repeat_cycle)
     @id = id
     @value = value
     @occurence = occurence
     @last_update = last_update
     @repeated = repeated
+    @repeat_cycle = repeat_cycle
     if Time.now.to_i - last_update > outdate_time
       @islearnt = false
       @repeated = 0
+      @repeat_cycle += 1
     else
       @islearnt = islearnt
     end
@@ -101,6 +103,10 @@ class Entry
 
   def repeated=(value)
     @repeated = value
+  end
+
+  def repeat_cycle
+    @repeat_cycle
   end
 
   def islearnt
@@ -256,7 +262,7 @@ class EntryDTO
   def update_load(entry)
     @conn.execute \
       "UPDATE user_vocabulary "\
-      "SET repeated = #{entry.repeated}, islearnt = #{entry.islearnt}, last_update = #{entry.last_update} " \
+      "SET repeated = #{entry.repeated}, islearnt = #{entry.islearnt}, last_update = #{entry.last_update}, repeat_cycle = #{entry.repeat_cycle} " \
       "WHERE id = #{entry.id}"
   end
 
@@ -274,7 +280,7 @@ class EntryDTO
     kanji_cache = {}
     entries_raw.each {
       |e|
-      entry = Entry.new(e[0], e[1], e[2], e[3].to_i, e[4], e[5], e[10], e[8], e[9], "word", @outdate_time)
+      entry = Entry.new(e[0], e[1], e[2], e[3].to_i, e[4], e[5], e[11], e[9], e[10], "word", @outdate_time, e[6])
       kanjis_list = []
       entry.value.each_char {
         |symbol|
@@ -311,7 +317,7 @@ class EntryDTO
     entries = []
     entries_raw.each {
       |e|
-      entry = Entry.new(e[0], e[1], e[2], e[3].to_i, e[4], e[5], e[11], "on: #{e[8]}; kun: #{e[9]}", e[10], "kanji", @outdate_time)
+      entry = Entry.new(e[0], e[1], e[2], e[3].to_i, e[4], e[5], e[12], "on: #{e[9]}; kun: #{e[10]}", e[11], "kanji", @outdate_time, e[6])
       entries.append(entry)
     }
     return entries
