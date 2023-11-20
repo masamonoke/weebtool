@@ -4,11 +4,8 @@ import yaml
 from threading import Thread
 
 def _task(n):
-    if n == "n5":
-        gen_n5()
-    else:
-        e = Executor(n)
-        e.gen(skip_types=True)
+    e = Executor(n)
+    e.gen(skip_types=True)
 
 if __name__ == "__main__":
     with open("config.yml", "r") as f:

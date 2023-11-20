@@ -41,7 +41,7 @@ class Executor:
         query = \
             "CREATE TABLE IF NOT EXISTS kanji (\n"\
             "\tid INTEGER PRIMARY KEY AUTOINCREMENT,\n"\
-            "\tsymbol TEXT,\n" \
+            "\tsymbol TEXT UNIQUE,\n" \
             "\tonyomi TEXT,\n" \
             "\tkunyomi TEXT,\n" \
             "\ttranslation TEXT,\n" \
@@ -51,7 +51,7 @@ class Executor:
         query = \
             "CREATE TABLE IF NOT EXISTS word (\n"\
             "\tid INTEGER PRIMARY KEY AUTOINCREMENT,\n"\
-            "\tword TEXT,\n" \
+            "\tword TEXT UNIQUE,\n" \
             "\treading TEXT,\n" \
             "\ttranslation TEXT,\n" \
             "\tdifficulty TEXT,\n" \
@@ -86,6 +86,7 @@ class Executor:
         with open(self.sql_file, "w") as f:
             for line in queries:
                 f.write(f"{line}\n")
+
     def _get_words(self):
         with open(self.word_dataset, newline="") as f:
             reader = csv.reader(f, delimiter=",")

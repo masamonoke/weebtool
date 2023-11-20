@@ -2,10 +2,7 @@ require "yaml"
 require "sqlite3"
 require "date"
 require "optparse"
-
-def connect(db)
-  return SQLite3::Database.open db
-end
+require "./db.rb"
 
 def update(conn, value)
   res = conn.execute "SELECT * FROM user_vocabulary WHERE value = '#{value}'"
