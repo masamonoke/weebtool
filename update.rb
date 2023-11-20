@@ -24,7 +24,7 @@ end
 def add(conn, value)
   begin
     conn.execute "INSERT INTO user_vocabulary (value, occurence, last_update, repeated, islearnt)" \
-      "VALUES ('%s', '%s', '%s', '%s', '%s');" % [value, 0, Time.now.to_i, 0, false]
+      "VALUES ('%s', '%s', '%s', '%s', '%s');" % [value, 1, Time.now.to_i, 0, false]
     puts "added new entry #{value}"
   rescue SQLite3::ConstraintException => e
     puts "Entry #{value} is not new, updating occurences"
