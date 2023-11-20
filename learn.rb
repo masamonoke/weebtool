@@ -57,13 +57,18 @@ class Kanji
 end
 
 class Entry
-  def initialize(id, value, occurence, last_update, repeated, islearnt, grade, reading, translation, type)
+  def initialize(id, value, occurence, last_update, repeated, islearnt, grade, reading, translation, type, outdate_time)
     @id = id
     @value = value
     @occurence = occurence
     @last_update = last_update
     @repeated = repeated
-    @islearnt = islearnt
+    if Time.now.to_i - last_update > outdate_time
+      @islearnt = false
+      @repeated = 0
+    else
+      @islearnt = islearnt
+    end
     @grade = grade
     @reading = reading
     @translation = translation
@@ -100,6 +105,10 @@ class Entry
 
   def islearnt
     @islearnt
+  end
+
+  def islearnt=(value)
+    @islearnt = value
   end
 
   def grade
@@ -146,6 +155,7 @@ class Entry
     if @islearnt
       m -= 1000
     end
+    return m
   end
 
   def to_s
@@ -168,10 +178,11 @@ class Entry
 end
 
 class Learner
-  def initialize(entries, font_size)
+  def initialize(entries, font_size, repeat_to_learn)
     @entries = entries
     @current_entry = entries[0]
     @font_size = font_size
+    @repeats = repeat_to_learn
   end
 
   def learn
@@ -206,10 +217,6 @@ class Learner
   private :_gui, :_console
 end
 
-def gui()
-  Tk.mainloop()
-end
-
 def console(entries)
   entries.each {
     |e|
@@ -218,12 +225,19 @@ def console(entries)
     puts e
     e.repeated = e.repeated + 1
     e.last_update = Time.now.to_i
+    if e.repeated > @repeats
+      e.islearnt = true
+      puts "Congrats! You learnt entry: #{e.value}"
+    end
   }
 end
 
 class EntryDTO
-  def initialize(conn)
+  def initialize(conn, words_learn_count, kanji_learn_count, outdate_time)
     @conn = conn
+    @word_count = words_learn_count
+    @kanji_count = kanji_learn_count
+    @outdate_time = outdate_time
     self.load_entries()
   end
 
@@ -243,8 +257,8 @@ class EntryDTO
   end
 
   def load_entries
-    word_entries = _load_words(@conn).sort_by {|e| -e.metric } [0..10]
-    kanji_entries = _load_kanjis(@conn).sort_by {|e| -e.metric } [0..5]
+    word_entries = _load_words(@conn).sort_by {|e| -e.metric } [0..@word_count]
+    kanji_entries = _load_kanjis(@conn).sort_by {|e| -e.metric } [0..@kanji_count]
     @entry = word_entries + kanji_entries
   end
 
@@ -256,7 +270,7 @@ class EntryDTO
     kanji_cache = {}
     entries_raw.each {
       |e|
-      entry = Entry.new(e[0], e[1], e[2], e[3].to_i, e[4], e[5], e[10], e[8], e[9], "word")
+      entry = Entry.new(e[0], e[1], e[2], e[3].to_i, e[4], e[5], e[10], e[8], e[9], "word", @outdate_time)
       kanjis_list = []
       entry.value.each_char {
         |symbol|
@@ -293,7 +307,7 @@ class EntryDTO
     entries = []
     entries_raw.each {
       |e|
-      entry = Entry.new(e[0], e[1], e[2], e[3].to_i, e[4], e[5], e[11], "on: #{e[8]}; kun: #{e[9]}", e[10], "kanji")
+      entry = Entry.new(e[0], e[1], e[2], e[3].to_i, e[4], e[5], e[11], "on: #{e[8]}; kun: #{e[9]}", e[10], "kanji", @outdate_time)
       entries.append(entry)
     }
     return entries
@@ -304,10 +318,15 @@ class EntryDTO
 end
 
 if __FILE__ == $0
-  db = YAML.load_file("config.yml")["db"]
+  conf = YAML.load_file("config.yml")
+  db = conf["db"]
+  outdate_time = conf["outdate_time"]
+  words_learn_count = conf["words_learn_count"]
+  kanji_learn_count = conf["kanji_learn_count"]
+  repeat_to_learn = conf["repeat_to_learn"]
   conn = connect(db)
-  dto = EntryDTO.new(conn)
-  ler = Learner.new(dto.entries, 150)
+  dto = EntryDTO.new(conn, words_learn_count, kanji_learn_count, outdate_time)
+  ler = Learner.new(dto.entries, 150, repeat_to_learn)
   ler.learn()
   dto.entries.each {
     |e|

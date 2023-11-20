@@ -1,2 +1,6 @@
 kanji_list: kanji_list.txt
 db: jap_db.sqlite3
+outdate_time: 2592000
+repeat_to_learn: 15
+words_learn_count: 10
+kanji_learn_count: 5
