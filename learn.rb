@@ -172,7 +172,8 @@ class Entry
       "\tislearnt=#{self.islearnt},\n" \
       "\treading=#{self.reading},\n" \
       "\ttranslation=#{self.translation},\n" \
-      "\ttype=#{@type}\n"
+      "\ttype=#{@type},\n" \
+      "\tgrade=#{@grade},\n" \
       "\tkanjis=#{ks}\n"
   end
 end
@@ -186,6 +187,9 @@ class Learner
   end
 
   def learn
+    if @entries.empty?
+      raise Exception.new "Vocabulary is empty"
+    end
     root = TkRoot.new {
       title "weeblang"
       resizable 0, 0
@@ -313,7 +317,7 @@ class EntryDTO
     return entries
   end
 
-  private :_load_words
+  private :_load_words, :_load_kanjis
 
 end
 
