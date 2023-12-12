@@ -3,3 +3,6 @@ jap_db.sqlite3
 sql
 todo.txt
 words.txt
+.DS_Store
+bin
+.solargraph.yml
