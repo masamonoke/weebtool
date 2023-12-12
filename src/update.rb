@@ -1,8 +1,9 @@
 require "sqlite3"
 require "date"
 require "optparse"
-require "./db.rb"
-require "./config.rb"
+
+require_relative "db.rb"
+require_relative "config.rb"
 
 module Weebtool
 

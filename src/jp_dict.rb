@@ -1,7 +1,7 @@
 require "eiwa"
 
-require "./config.rb"
-require "./db.rb"
+require_relative "config.rb"
+require_relative "db.rb"
 
 module Weebtool
 

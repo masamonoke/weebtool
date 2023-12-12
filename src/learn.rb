@@ -1,11 +1,11 @@
 require "tk"
 require "YAML"
 
-require "./db.rb"
-require "./update.rb"
-require "./kana.rb"
-require "./jp_dict.rb"
-require "./log.rb"
+require_relative "db.rb"
+require_relative "update.rb"
+require_relative "kana.rb"
+require_relative "jp_dict.rb"
+require_relative "log.rb"
 
 module Weebtool
 
