@@ -172,12 +172,11 @@ module Weebtool
 
 
   class EntryDTO
-    def initialize(conn, words_learn_count, kanji_learn_count, outdate_time, logger = nil)
+    def initialize(conn, words_learn_count, kanji_learn_count, outdate_time)
       @conn = conn
       @word_count = words_learn_count
       @kanji_count = kanji_learn_count
       @outdate_time = outdate_time
-      @logger = logger unless logger.nil?
       self.load_entries()
     end
 
@@ -208,7 +207,7 @@ module Weebtool
         LEFT JOIN word w ON w.word = u.value"
       entries = []
       kanji_cache = {}
-      jd = JapDict.new(conn)
+      jd = JapDict.new(conn, $config["jmdict"])
       entries_raw.each {
         |e|
         if e[7].nil?
@@ -238,9 +237,7 @@ module Weebtool
               kanji = Kanji.new(kanji_raw[0][0], kanji_raw[0][1], kanji_raw[0][2], kanji_raw[0][3], kanji_raw[0][4])
               kanji_cache[symbol] = kanji
             else
-              # puts "Unexpected kanji and is not found in dictionary: #{symbol}. Probably you need update your dictionary\n"
-              # @logger.debug("Unexpected kanji and is not found in dictionary: #{symbol}. Probably you need update your dictionary\n")
-              log(@logger, "Unexpected kanji and is not found in dictionary: #{symbol}. Probably you need update your dictionary\n")
+              log("Unexpected kanji and is not found in dictionary: #{symbol}. Probably you need update your dictionary\n")
             end
           end
           kanjis_list.append(kanji)

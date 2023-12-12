@@ -19,8 +19,14 @@ module Weebtool
   end
 
   class JapDict
-    def initialize(conn)
+    def initialize(conn, path)
       @conn = conn
+      createTable()
+      if _empty?
+        puts "Dictionary is empty. Loading from #{path} file. It may take some time"
+        saveDict(path)
+        puts "Done"
+      end
     end
 
     def createTable
@@ -34,8 +40,15 @@ module Weebtool
         "
     end
 
+    def _empty?
+      vals = @conn.execute "
+        SELECT * FROM jap_dict LIMIT 10
+      "
+      return vals.length == 0
+    end
+
     def saveDict(path)
-        Eiwa.parse_file("data/JMdict_e", type: :jmdict_e) {
+        Eiwa.parse_file("#{path}", type: :jmdict_e) {
         |entry|
         readings = []
         entry.readings.each {
@@ -81,13 +94,3 @@ module Weebtool
   end
 
 end
-
-if __FILE__ == $0
-
-  config = Weebtool::Config.config()
-  database = Weebtool::Database.new(config["db"])
-  jp = Weebtool::JapDict.new(database.conn)
-  jp.createTable
-  jp.saveDict("data/JMdict_e")
-end
-

@@ -6,3 +6,5 @@ words.txt
 .DS_Store
 bin
 .solargraph.yml
+furigana.rb
+JMdict_e

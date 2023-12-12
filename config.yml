@@ -4,3 +4,4 @@ outdate_time: 2592000
 repeat_to_learn: 15
 words_learn_count: 10
 kanji_learn_count: 5
+jmdict: data/JMdict_e

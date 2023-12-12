@@ -1,5 +1,5 @@
-
-def log(logger, text)
-  logger.debug(text) unless logger.nil?
+module Weebtool
+  def log(text)
+    $logger.debug(text) unless $logger.nil?
+  end
 end
-
