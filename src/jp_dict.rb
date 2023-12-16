@@ -85,10 +85,15 @@ module Weebtool
         SELECT word, reading, translations FROM jap_dict jd
         WHERE jd.word = '#{value}'
       "
-      if w.length > 1
+      if w.length > 1 # if there is more than one word entry in dictionary
         w = w[0]
       end
-      return Word.new(w[0], w[1], w[2])
+      w = w[0] # remove outer array
+      if w.nil?
+        return []
+      else
+        return Word.new(w[0], w[1], w[2])
+      end
     end
 
   end
